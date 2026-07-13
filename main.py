@@ -1,5 +1,6 @@
 import tkinter as tk
 import csv
+import tkinter.messagebox as messagebox
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
@@ -31,11 +32,20 @@ def save_password():
     password = password_entry.get()
     password_entry.delete(0, tk.END)
     lis = [website, email, password]
-    with open('data.csv', mode='a', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(lis)
-    
 
+    if len(website) == 0 or len(email) == 0 or len(password) == 0:
+        messagebox.showerror(title="Error", message="Please fill in all fields.")
+        return
+
+
+    is_oky = messagebox.askokcancel(title=website, message=f"These are the details entered: \nEmail: {email} "f"\nPassword: {password} \nIs it ok to save?")
+
+    if is_oky:
+        with open('data.csv', mode='a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(lis)
+    
+        messagebox.showinfo(title="Success", message="Password saved successfully!")
 
 
 # ---------------------------- UI SETUP ------------------------------- #
