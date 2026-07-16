@@ -87,6 +87,25 @@ def save_password():
 
         messagebox.showinfo(title="Success", message="Password saved successfully!")
 
+# ---------------------------- Search setup ---------------------------- #
+def search():
+    website = website_entry.get()
+    try:
+        with open('data.json', mode='r') as file:
+            data = json.load(file)
+    except (FileNotFoundError,json.decoder.JSONDecodeError):
+        messagebox.showerror(title="Error", message="No data file found.")
+        return
+
+    if website in data:
+        email = data[website]["email"]
+        password = data[website]["password"]
+        messagebox.showinfo(title=website, message=f"Email: {email}\nPassword: {password}")
+    else:
+        messagebox.showerror(title="Error", message=f"No details for {website} exists.")
+
+
+
 
 # ---------------------------- UI SETUP ------------------------------- #
 
@@ -111,7 +130,7 @@ password_label.grid(row=3, column=0)
 
 # Entries
 website_entry = tk.Entry(width=35)
-website_entry.grid(row=1, column=1, columnspan=2, sticky="EW")
+website_entry.grid(row=1, column=1, columnspan=1, sticky="EW")
 website_entry.focus()
 
 email_entry = tk.Entry(width=35)
@@ -128,6 +147,7 @@ generate_password_button.grid(row=3, column=2, sticky="EW")
 add_button = tk.Button(text='Add', width=36,command=save_password)
 add_button.grid(row=4, column=1, columnspan=2, sticky="EW")
 
-
+search_button = tk.Button(text='Search',bg='blue',activebackground='blue',command=search)
+search_button.grid(row=1,column=2,sticky="EW")
 
 window.mainloop()
