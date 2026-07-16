@@ -2,6 +2,7 @@ import tkinter as tk
 import csv
 import tkinter.messagebox as messagebox
 import random
+import json
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
 
 #Password Generator Project
@@ -30,30 +31,36 @@ def generate_password():
 
 
 # ---------------------------- SAVE PASSWORD ------------------------------- #
-row_to_check = ['Website', 'Email/Username', 'Password']
-with open('data.csv', mode='a+', newline='') as file:
-    file.seek(0)
-    reader = csv.reader(file)
+
+
+###---- for csv files----###
+# row_to_check = ['Website', 'Email/Username', 'Password']
+# with open('data.csv', mode='a+', newline='') as file:
+#     file.seek(0)
+#     reader = csv.reader(file)
     
-    row_exists = False
-    for currnet_row in reader:
-        if currnet_row == row_to_check:
-            row_exists = True
-            break
+#     row_exists = False
+#     for currnet_row in reader:
+#         if currnet_row == row_to_check:
+#             row_exists = True
+#             break
     
         
-    if not row_exists:
-        writer = csv.writer(file)
-        writer.writerow(row_to_check)
+#     if not row_exists:
+#         writer = csv.writer(file)
+#         writer.writerow(row_to_check)
+
+
 
 def save_password():
     website = website_entry.get()
-    website_entry.delete(0, tk.END)
     email = email_entry.get()
-    email_entry.delete(0, tk.END)
     password = password_entry.get()
-    password_entry.delete(0, tk.END)
-    lis = [website, email, password]
+    new_data = {
+        website: {
+            "email": email,
+            "password": password,
+        }}
 
     if len(website) == 0 or len(email) == 0 or len(password) == 0:
         messagebox.showerror(title="Error", message="Please fill in all fields.")
@@ -63,10 +70,21 @@ def save_password():
     is_oky = messagebox.askokcancel(title=website, message=f"These are the details entered: \nEmail: {email} "f"\nPassword: {password} \nIs it ok to save?")
 
     if is_oky:
-        with open('data.csv', mode='a', newline='') as file:
-            writer = csv.writer(file)
-            writer.writerow(lis)
-    
+        website_entry.delete(0, tk.END)
+        email_entry.delete(0, tk.END)
+        password_entry.delete(0, tk.END)
+        try:
+            with open('data.json', mode='r') as file:
+                data = json.load(file)
+        except (FileNotFoundError,json.decoder.JSONDecodeError):
+            data = {}
+            
+        data.update(new_data)
+            
+        with open('data.json', mode='w') as file:
+            json.dump(data, file, indent=4)
+
+
         messagebox.showinfo(title="Success", message="Password saved successfully!")
 
 
